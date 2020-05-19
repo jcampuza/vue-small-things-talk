@@ -1,32 +1,59 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <header>
+    <nav>
+      <ul>
+        <li v-for="route of routes" :key="route">
+          <router-link :to="route.path">{{ route.name }}</router-link>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <section>
+    <Suspense>
+      <template #default>
+        <router-view />
+      </template>
+      <template #fallback>
+        <SpinnerVue />
+      </template>
+    </Suspense>
+  </section>
+
+  <div id="modals"></div>
+  <div id="notifications"></div>
 </template>
 
+<script>
+import router from './router';
+import SpinnerVue from './components/Spinner.vue';
+
+export default {
+  name: 'App',
+  components: {
+    SpinnerVue
+  },
+  setup() {
+    const routes = router.getRoutes().map(route => ({ name: route.name, path: route.path }));
+
+    return { routes };
+  }
+};
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+#root {
+  min-height: 100vh;
 }
 
-#nav {
-  padding: 30px;
+#notifications {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+main {
+  margin: 1rem auto;
+  max-width: 75%;
 }
 </style>
